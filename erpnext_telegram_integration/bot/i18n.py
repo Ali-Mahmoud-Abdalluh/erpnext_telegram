@@ -173,39 +173,42 @@ def get_bot_lang():
             fields=["name", "bot_default_language"],
             limit=1,
         )
+        if not settings:
+             # Fallback: first Telegram Settings
+            settings = frappe.get_all(
+                "Telegram Settings",
+                fields=["name", "bot_default_language"],
+                limit=1,
+            )
+
         if settings:
             lang_name = settings[0].get("bot_default_language")
             if not lang_name:
                 return "en"
             
+            # Manual Mapping for common cases where DB lookup might fail or be slow
+            manual_map = {
+                "Arabic": "ar",
+                "English": "en",
+                "Spanish": "es",
+                "French": "fr",
+                "German": "de",
+            }
+            if lang_name in manual_map:
+                return manual_map[lang_name]
+
             # Resolve language code from Language doctype if it's a name like "Arabic"
             if len(lang_name) > 2:
                 lang_code = frappe.db.get_value("Language", lang_name, "language_code")
                 if lang_code:
-                    lang_name = lang_code
+                    return lang_code
 
             if lang_name in SUPPORTED_LANGS:
                 return lang_name
             return "en"
             
-        # Fallback: first Telegram Settings
-        settings = frappe.get_all(
-            "Telegram Settings",
-            fields=["name", "bot_default_language"],
-            limit=1,
-        )
-        if settings:
-            lang_name = settings[0].get("bot_default_language")
-            if not lang_name:
-                return "en"
-                
-            if len(lang_name) > 2:
-                lang_code = frappe.db.get_value("Language", lang_name, "language_code")
-                if lang_code:
-                    lang_name = lang_code
-                    
-            return lang_name if lang_name in SUPPORTED_LANGS else "en"
-    except Exception:
+    except Exception as e:
+        print(f"Error getting bot lang: {e}")
         pass
     return "en"
 
