@@ -56,9 +56,9 @@ echo "Reloading Supervisor..."
 sudo supervisorctl reread
 sudo supervisorctl update
 
-# Force restart to pick up code changes
-echo "Restarting Bot Service..."
-sudo supervisorctl restart frappe-bench-telegram-bot
+# Force restart to pick up code changes (Web & Bot)
+echo "Restarting All Services..."
+sudo supervisorctl restart all
 
 # 4. Check Status
 echo "Checking Bot Status..."
