@@ -160,12 +160,7 @@ BOT_STRINGS = {
 SUPPORTED_LANGS = tuple(BOT_STRINGS["cancel"].keys())
 
 
-@functools.lru_cache(maxsize=1)
-def get_bot_lang():
-    """
-    Get bot language from Telegram Settings (Bot Default Language).
-    Same for all users - configured by admin in UI.
-    """
+def _fetch_bot_lang_from_db():
     try:
         settings = frappe.get_all(
             "Telegram Settings",
@@ -211,6 +206,14 @@ def get_bot_lang():
         print(f"Error getting bot lang: {e}")
         pass
     return "en"
+
+
+def get_bot_lang():
+    """
+    Get bot language from Telegram Settings (Bot Default Language).
+    Uses frappe.cache() to allow hot-reloading when settings change.
+    """
+    return frappe.cache().get_value("bot_default_language", generator=_fetch_bot_lang_from_db)
 
 
 def get_lang(context_user_data=None):

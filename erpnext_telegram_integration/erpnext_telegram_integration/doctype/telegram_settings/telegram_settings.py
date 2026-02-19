@@ -20,6 +20,10 @@ class TelegramSettings(Document):
 					"Please install HRMS or disable the Interactive Bot."
 				))
 
+	def on_update(self):
+		"""Clear cache on update so bot picks up changes immediately."""
+		frappe.cache().delete_value("bot_default_language")
+
 
 
 @frappe.whitelist()
