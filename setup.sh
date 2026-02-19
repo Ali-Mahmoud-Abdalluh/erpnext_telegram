@@ -13,7 +13,14 @@ echo "Starting Telegram Bot Setup..."
 
 # 1. Migrate (Triggers install.py -> adds to Procfile)
 echo "Running bench migrate..."
-bench --site $(ls sites | grep -v 'assets\|apps\|common_site_config.json' | head -n 1) migrate
+# Find first directory in sites/ that is not assets, apps, or starting with .
+SITE_NAME=$(find sites -maxdepth 1 -mindepth 1 -type d ! -name "assets" ! -name "apps" ! -name ".*" | head -n 1 | sed 's|sites/||')
+if [ -z "$SITE_NAME" ]; then
+    echo "Error: Could not detect site name."
+    exit 1
+fi
+echo "Detected site: $SITE_NAME"
+bench --site $SITE_NAME migrate
 
 # 2. Setup Supervisor (Reads Procfile -> Updates Supervisor Config)
 echo "Updating Supervisor Configuration..."
