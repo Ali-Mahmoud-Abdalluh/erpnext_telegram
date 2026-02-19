@@ -1016,6 +1016,7 @@ def _handle_telegram_user_token(update, context, token_text):
 def run():
     """Start the interactive leave bot."""
     frappe.connect()
+    frappe.set_user("Administrator")
     token, _ = get_bot_token()
     app = (
         ApplicationBuilder()
