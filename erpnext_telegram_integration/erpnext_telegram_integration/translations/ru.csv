@@ -5,3 +5,91 @@ Cancel,Отмена
 Full Day,Полный день
 Half Day,Полдня
 Skip,Пропустить
+"Welcome back, {0} 👋","Welcome back, {0} 👋"
+"Hello! 👋
+
+Please enter your **Employee Number** only (e.g. 31)
+or press **Link Token** to link your account:","Hello! 👋
+
+Please enter your **Employee Number** only (e.g. 31)
+or press **Link Token** to link your account:"
+"🔗 Send the **Token** from Telegram User Settings (copy and paste here):
+
+Or press **Cancel** to go back.","🔗 Send the **Token** from Telegram User Settings (copy and paste here):
+
+Or press **Cancel** to go back."
+"❌ Numbers only (e.g. 31)
+or press **Link Token** to link your account:","❌ Numbers only (e.g. 31)
+or press **Link Token** to link your account:"
+⏳ Searching...,⏳ Searching...
+"❌ Employee not found. Try again
+or press **Link Token** to link your account:","❌ Employee not found. Try again
+or press **Link Token** to link your account:"
+"Hello {0} ({1}).
+🔒 Enter **password**:","Hello {0} ({1}).
+🔒 Enter **password**:"
+"✅ Logged in.
+Hello {0}","✅ Logged in.
+Hello {0}"
+❌ Wrong password. /start,❌ Wrong password. /start
+Logged out 👋,Logged out 👋
+📅 Leave start date:,📅 Leave start date:
+Choose from menu:,Choose from menu:
+Cancelled.,Cancelled.
+"Cancelled.
+
+Please enter **Employee Number** (e.g. 31):","Cancelled.
+
+Please enter **Employee Number** (e.g. 31):"
+"✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value.","✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value."
+"✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value.
+
+Please enter **Employee Number** (e.g. 31):","✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value.
+
+Please enter **Employee Number** (e.g. 31):"
+"⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).
+
+Try again or press **Cancel**:","⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).
+
+Try again or press **Cancel**:"
+Please send the token only (40 chars) or press **Cancel**:,Please send the token only (40 chars) or press **Cancel**:
+⚠️ I didn't understand. Send /start to begin again.,⚠️ I didn't understand. Send /start to begin again.
+"📅 Use the calendar above to select, or send **Cancel** to cancel.","📅 Use the calendar above to select, or send **Cancel** to cancel."
+"✅ Start: {0}
+
+📅 End date:","✅ Start: {0}
+
+📅 End date:"
+⏳ Verifying...,⏳ Verifying...
+❌ No leave types available.,❌ No leave types available.
+👇 Leave type:,👇 Leave type:
+❌ Choose leave type from the list:,❌ Choose leave type from the list:
+Duration:,Duration:
+❌ Choose from list:,❌ Choose from list:
+Leave reason (or 'Skip'):,Leave reason (or 'Skip'):
+⏳ Submitting...,⏳ Submitting...
+❌ Failed: {0},❌ Failed: {0}
+✅ Submitted: {0},✅ Submitted: {0}
+Cancelled.,Cancelled.
+⚠️ An error occurred. Please try again.,⚠️ An error occurred. Please try again.
+⛔ Attendance already marked for this day.,⛔ Attendance already marked for this day.
+Date is outside leave allocation period.,Date is outside leave allocation period.
+Insufficient leave balance.,Insufficient leave balance.
+⛔ Leave application already exists for this period.,⛔ Leave application already exists for this period.
+An unknown error occurred.,An unknown error occurred.
