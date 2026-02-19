@@ -41,14 +41,14 @@ echo "Creating Supervisor config at $CONF_FILE..."
 # Write config file (Standard Bench worker pattern)
 sudo bash -c "cat > $CONF_FILE" <<EOL
 [program:frappe-bench-telegram-bot]
-command=${BENCH_DIR}/env/bin/python ${BENCH_DIR}/apps/frappe/frappe/utils/bench_helper.py frappe execute erpnext_telegram_integration.bot.leave_bot.run
+command=${BENCH_DIR}/env/bin/python -m frappe.utils.bench_helper frappe execute erpnext_telegram_integration.bot.leave_bot.run
 priority=1
 autostart=true
 autorestart=true
 stdout_logfile=${BENCH_DIR}/logs/telegram_bot.log
 stderr_logfile=${BENCH_DIR}/logs/telegram_bot.error.log
 user=${USER_NAME}
-directory=${BENCH_DIR}
+directory=${BENCH_DIR}/sites
 EOL
 
 # 3. Reload Supervisor
