@@ -6,6 +6,7 @@ Uses Bot Default Language from Telegram Settings (same for all users).
 from __future__ import unicode_literals
 
 import frappe
+import functools
 
 # Button labels and short options - must match user input, so we need all translations
 # Key -> {lang_code: translated_text}
@@ -159,6 +160,7 @@ BOT_STRINGS = {
 SUPPORTED_LANGS = tuple(BOT_STRINGS["cancel"].keys())
 
 
+@functools.lru_cache(maxsize=1)
 def get_bot_lang():
     """
     Get bot language from Telegram Settings (Bot Default Language).
@@ -172,10 +174,20 @@ def get_bot_lang():
             limit=1,
         )
         if settings:
-            lang = settings[0].get("bot_default_language") or "en"
-            if lang in SUPPORTED_LANGS:
-                return lang
+            lang_name = settings[0].get("bot_default_language")
+            if not lang_name:
+                return "en"
+            
+            # Resolve language code from Language doctype if it's a name like "Arabic"
+            if len(lang_name) > 2:
+                lang_code = frappe.db.get_value("Language", lang_name, "language_code")
+                if lang_code:
+                    lang_name = lang_code
+
+            if lang_name in SUPPORTED_LANGS:
+                return lang_name
             return "en"
+            
         # Fallback: first Telegram Settings
         settings = frappe.get_all(
             "Telegram Settings",
@@ -183,8 +195,16 @@ def get_bot_lang():
             limit=1,
         )
         if settings:
-            lang = settings[0].get("bot_default_language") or "en"
-            return lang if lang in SUPPORTED_LANGS else "en"
+            lang_name = settings[0].get("bot_default_language")
+            if not lang_name:
+                return "en"
+                
+            if len(lang_name) > 2:
+                lang_code = frappe.db.get_value("Language", lang_name, "language_code")
+                if lang_code:
+                    lang_name = lang_code
+                    
+            return lang_name if lang_name in SUPPORTED_LANGS else "en"
     except Exception:
         pass
     return "en"
