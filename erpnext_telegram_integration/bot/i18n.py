@@ -254,53 +254,181 @@ def _set_lang_and_translate(lang, source):
         return source
 
 
-# Message keys -> English source (used with frappe._ for CSV translations)
+# Message keys -> {lang_code: translated_text}
 MSG_SOURCES = {
-    "welcome_back": "Welcome back, {0} 👋",
-    "welcome_new": "Hello! 👋\n\nPlease enter your **Employee Number** only (e.g. 31)\nor press **Link Token** to link your account:",
-    "send_token": "🔗 Send the **Token** from Telegram User Settings (copy and paste here):\n\nOr press **Cancel** to go back.",
-    "digits_only": "❌ Numbers only (e.g. 31)\nor press **Link Token** to link your account:",
-    "searching": "⏳ Searching...",
-    "employee_not_found": "❌ Employee not found. Try again\nor press **Link Token** to link your account:",
-    "enter_password": "Hello {0} ({1}).\n🔒 Enter **password**:",
-    "login_success": "✅ Logged in.\nHello {0}",
-    "wrong_password": "❌ Wrong password. /start",
-    "logged_out": "Logged out 👋",
-    "leave_start_date": "📅 Leave start date:",
-    "choose_from_menu": "Choose from menu:",
-    "cancelled": "Cancelled.",
-    "cancelled_enter_id": "Cancelled.\n\nPlease enter **Employee Number** (e.g. 31):",
-    "token_success": "✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.",
-    "token_success_enter_id": "✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.\n\nPlease enter **Employee Number** (e.g. 31):",
-    "token_unknown": "⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).\n\nTry again or press **Cancel**:",
-    "send_token_only": "Please send the token only (40 chars) or press **Cancel**:",
-    "unknown_send_start": "⚠️ I didn't understand. Send /start to begin again.",
-    "use_calendar": "📅 Use the calendar above to select, or send **Cancel** to cancel.",
-    "start_date_ok": "✅ Start: {0}\n\n📅 End date:",
-    "verifying": "⏳ Verifying...",
-    "no_leaves": "❌ No leave types available.",
-    "leave_type_prompt": "👇 Leave type:",
-    "choose_leave_type": "❌ Choose leave type from the list:",
-    "duration": "Duration:",
-    "choose_from_list": "❌ Choose from list:",
-    "leave_reason": "Leave reason (or 'Skip'):",
-    "submitting": "⏳ Submitting...",
-    "failed": "❌ Failed: {0}",
-    "submitted": "✅ Submitted: {0}",
-    "cancelled_short": "Cancelled.",
-    "error_occurred": "⚠️ An error occurred. Please try again.",
-    "err_attendance_exists": "⛔ Attendance already marked for this day.",
-    "err_outside_allocation": "Date is outside leave allocation period.",
-    "err_insufficient_balance": "Insufficient leave balance.",
-    "err_already_applied": "⛔ Leave application already exists for this period.",
-    "err_unknown": "An unknown error occurred.",
+    "welcome_back": {
+        "en": "Welcome back, {0} 👋",
+        "ar": "مرحباً بعودتك، {0} 👋",
+    },
+    "welcome_new": {
+        "en": "Hello! 👋\n\nPlease enter your **Employee Number** only (e.g. 31)\nor press **Link Token** to link your account:",
+        "ar": "مرحباً! 👋\n\nالرجاء إدخال **رقم الموظف** فقط (مثال: 31)\nأو اضغط على **ربط الرمز** لربط حسابك:",
+    },
+    "send_token": {
+        "en": "🔗 Send the **Token** from Telegram User Settings (copy and paste here):\n\nOr press **Cancel** to go back.",
+        "ar": "🔗 أرسل **الرمز** من إعدادات مستخدم تيليجرام (انسخ والصق هنا):\n\nأو اضغط **إلغاء** للعودة.",
+    },
+    "digits_only": {
+        "en": "❌ Numbers only (e.g. 31)\nor press **Link Token** to link your account:",
+        "ar": "❌ أرقام فقط (مثال: 31)\nأو اضغط **ربط الرمز** لربط حسابك:",
+    },
+    "searching": {
+        "en": "⏳ Searching...",
+        "ar": "⏳ جاري البحث...",
+    },
+    "employee_not_found": {
+        "en": "❌ Employee not found. Try again\nor press **Link Token** to link your account:",
+        "ar": "❌ الموظف غير موجود. حاول مرة أخرى\nأو اضغط **ربط الرمز** لربط حسابك:",
+    },
+    "enter_password": {
+        "en": "Hello {0} ({1}).\n🔒 Enter **password**:",
+        "ar": "مرحباً {0} ({1}).\n🔒 أدخل **كلمة المرور**:",
+    },
+    "login_success": {
+        "en": "✅ Logged in.\nHello {0}",
+        "ar": "✅ تم تسجيل الدخول.\nمرحباً {0}",
+    },
+    "wrong_password": {
+        "en": "❌ Wrong password. /start",
+        "ar": "❌ كلمة المرور غير صحيحة. /start",
+    },
+    "logged_out": {
+        "en": "Logged out 👋",
+        "ar": "تم تسجيل الخروج 👋",
+    },
+    "leave_start_date": {
+        "en": "📅 Leave start date:",
+        "ar": "📅 تاريخ بدء الإجازة:",
+    },
+    "choose_from_menu": {
+        "en": "Choose from menu:",
+        "ar": "اختر من القائمة:",
+    },
+    "cancelled": {
+        "en": "Cancelled.",
+        "ar": "تم الإلغاء.",
+    },
+    "cancelled_enter_id": {
+        "en": "Cancelled.\n\nPlease enter **Employee Number** (e.g. 31):",
+        "ar": "تم الإلغاء.\n\nالرجاء إدخال **رقم الموظف** (مثال: 31):",
+    },
+    "token_success": {
+        "en": "✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.",
+        "ar": "✅ تم حفظ معرف المحادثة بنجاح!\n\nID: `{0}`\n\nقم بتحديث نموذج إعدادات مستخدم تيليجرام لرؤية القيمة المحفوظة.",
+    },
+    "token_success_enter_id": {
+        "en": "✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.\n\nPlease enter **Employee Number** (e.g. 31):",
+        "ar": "✅ تم حفظ معرف المحادثة بنجاح!\n\nID: `{0}`\n\nقم بتحديث نموذج إعدادات مستخدم تيليجرام لرؤية القيمة المحفوظة.\n\nالرجاء إدخال **رقم الموظف** (مثال: 31):",
+    },
+    "token_unknown": {
+        "en": "⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).\n\nTry again or press **Cancel**:",
+        "ar": "⚠️ رمز غير معروف. تأكد من إنشائه في إعدادات مستخدم تيليجرام وربطه بنفس البوت (إعدادات تيليجرام مع تفعيل البوت التفاعلي).\n\nحاول مرة أخرى أو اضغط **إلغاء**:",
+    },
+    "send_token_only": {
+        "en": "Please send the token only (40 chars) or press **Cancel**:",
+        "ar": "الرجاء إرسال الرمز فقط (40 حرفاً) أو اضغط **إلغاء**:",
+    },
+    "unknown_send_start": {
+        "en": "⚠️ I didn't understand. Send /start to begin again.",
+        "ar": "⚠️ لم أفهم. أرسل /start للبدء من جديد.",
+    },
+    "use_calendar": {
+        "en": "📅 Use the calendar above to select, or send **Cancel** to cancel.",
+        "ar": "📅 استخدم التقويم أعلاه للاختيار، أو أرسل **إلغاء** للإلغاء.",
+    },
+    "start_date_ok": {
+        "en": "✅ Start: {0}\n\n📅 End date:",
+        "ar": "✅ البدء: {0}\n\n📅 تاريخ الانتهاء:",
+    },
+    "verifying": {
+        "en": "⏳ Verifying...",
+        "ar": "⏳ جاري التحقق...",
+    },
+    "no_leaves": {
+        "en": "❌ No leave types available.",
+        "ar": "❌ لا توجد أنواع إجازات متاحة.",
+    },
+    "leave_type_prompt": {
+        "en": "👇 Leave type:",
+        "ar": "👇 نوع الإجازة:",
+    },
+    "choose_leave_type": {
+        "en": "❌ Choose leave type from the list:",
+        "ar": "❌ اختر نوع الإجازة من القائمة:",
+    },
+    "duration": {
+        "en": "Duration:",
+        "ar": "المدة:",
+    },
+    "choose_from_list": {
+        "en": "❌ Choose from list:",
+        "ar": "❌ اختر من القائمة:",
+    },
+    "leave_reason": {
+        "en": "Leave reason (or 'Skip'):",
+        "ar": "سبب الإجازة (أو 'تخطى'):",
+    },
+    "submitting": {
+        "en": "⏳ Submitting...",
+        "ar": "⏳ جاري الإرسال...",
+    },
+    "failed": {
+        "en": "❌ Failed: {0}",
+        "ar": "❌ فشل: {0}",
+    },
+    "submitted": {
+        "en": "✅ Submitted: {0}",
+        "ar": "✅ تم التقديم: {0}",
+    },
+    "cancelled_short": {
+        "en": "Cancelled.",
+        "ar": "تم الإلغاء.",
+    },
+    "error_occurred": {
+        "en": "⚠️ An error occurred. Please try again.",
+        "ar": "⚠️ حدث خطأ. حاول مرة أخرى.",
+    },
+    "err_attendance_exists": {
+        "en": "⛔ Attendance already marked for this day.",
+        "ar": "⛔ تم تسجيل الحضور لهذا اليوم بالفعل.",
+    },
+    "err_outside_allocation": {
+        "en": "Date is outside leave allocation period.",
+        "ar": "التاريخ خارج فترة تخصيص الإجازة.",
+    },
+    "err_insufficient_balance": {
+        "en": "Insufficient leave balance.",
+        "ar": "رصيد الإجازة غير كافٍ.",
+    },
+    "err_already_applied": {
+        "en": "⛔ Leave application already exists for this period.",
+        "ar": "⛔ يوجد طلب إجازة بالفعل لهذه الفترة.",
+    },
+    "err_unknown": {
+        "en": "An unknown error occurred.",
+        "ar": "حدث خطأ غير معروف.",
+    },
 }
 
 
 def msg(key, lang=None, *args, **kwargs):
-    """Get translated message. Uses frappe._() with lang set for CSV lookup."""
+    """Get translated message. Uses internal dictionary, falls back to English."""
     lang = lang or get_bot_lang()
-    source = MSG_SOURCES.get(key, key)
+    
+    # Get the dictionary for the key (which contains translations)
+    translations = MSG_SOURCES.get(key)
+    
+    if isinstance(translations, dict):
+        # Look up language, fallback to 'en'
+        source = translations.get(lang) or translations.get("en") or key
+    else:
+        # Fallback for keys that might still be string-only (legacy safety)
+        source = translations or key
+
     if args or kwargs:
-        source = source.format(*args, **kwargs)
-    return _set_lang_and_translate(lang, source)
+        try:
+            source = source.format(*args, **kwargs)
+        except Exception:
+            pass
+            
+    return source
