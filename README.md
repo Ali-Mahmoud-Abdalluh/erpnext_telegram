@@ -60,7 +60,11 @@ Employees can apply for leave directly from Telegram:
 4. **Run the bot**:
 
    **Using Bench (Recommended for Dev/Standard Production):**
-   This app includes a `Procfile` so the bot starts automatically with `bench start`.
+   The app automatically adds the bot process to your bench's `Procfile` when you run `bench migrate`.
+   Simply run:
+   ```bash
+   bench start
+   ```
    
    For production with Supervisor:
    ```bash

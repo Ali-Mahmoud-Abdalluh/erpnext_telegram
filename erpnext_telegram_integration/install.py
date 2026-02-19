@@ -6,6 +6,7 @@ import frappe
 def after_install():
 	"""Add custom fields to Employee for interactive Telegram bot."""
 	add_employee_telegram_fields()
+	setup_procfile()
 
 
 def add_employee_telegram_fields():
@@ -53,3 +54,29 @@ def add_employee_telegram_fields():
 				message=f"Failed to add custom field {field.get('fieldname')}: {e}",
 				title="ERPNext Telegram Install",
 			)
+
+
+def setup_procfile():
+	"""Ensure the bot process is in the bench Procfile."""
+	import os
+	procfile_path = "Procfile" # bench root is CWD
+	if not os.path.exists(procfile_path):
+		return
+
+	cmd = "telegram_bot: bench execute erpnext_telegram_integration.bot.leave_bot.run"
+	
+	try:
+		with open(procfile_path, "r") as f:
+			content = f.read()
+
+		if cmd in content:
+			return
+
+		with open(procfile_path, "a") as f:
+			if not content.endswith("\n") and content:
+				f.write("\n")
+			f.write(f"{cmd}\n")
+		
+		print("Added telegram_bot to Procfile")
+	except Exception:
+		pass
