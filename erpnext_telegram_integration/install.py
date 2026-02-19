@@ -66,15 +66,15 @@ def setup_procfile():
 	cmd = "telegram_bot: bench execute erpnext_telegram_integration.bot.leave_bot.run"
 	
 	try:
-		with open(procfile_path, "r") as f:
+		with open(procfile_path, "r+") as f:
 			content = f.read()
+			if cmd in content:
+				return
 
-		if cmd in content:
-			return
-
-		with open(procfile_path, "a") as f:
-			if not content.endswith("\n") and content:
+			# Ensure we are on a new line
+			if content and not content.endswith("\n"):
 				f.write("\n")
+			
 			f.write(f"{cmd}\n")
 		
 		print("Added telegram_bot to Procfile")

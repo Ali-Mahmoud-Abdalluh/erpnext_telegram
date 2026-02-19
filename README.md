@@ -59,22 +59,23 @@ Employees can apply for leave directly from Telegram:
 3. **Set employee passwords**: In each Employee record, set "Self Service Password" (used for bot login). *Note: This field is automatically created in the Employee doctype upon installation or migration.*
 4. **Run the bot**:
 
-   **Using Bench (Recommended for Dev/Standard Production):**
-   The app automatically adds the bot process to your bench's `Procfile` when you run `bench migrate`.
-   Simply run:
+   **Development (Automatic):**
+   Simply run `bench start`. The bot is automatically added to Procfile during installation.
+
+   **Production (One-Click Setup):**
+   Run the included setup script to configure Supervisor automatically:
    ```bash
-   bench start
+   cd apps/erpnext_telegram_integration
+   chmod +x setup.sh
+   ./setup.sh
    ```
    
-   For production with Supervisor:
+   **Manual Production Setup:**
+   If you prefer manual steps:
    ```bash
-   bench setup supervisor
-   bench restart
-   ```
-
-   **Manual Run:**
-   ```bash
-   bench execute erpnext_telegram_integration.bot.leave_bot.run
+   bench migrate
+   sudo bench setup supervisor
+   sudo supervisorctl reload
    ```
 
 5. Employees: Open your bot in Telegram, send `/start`, enter employee number and password, then use "Request Leave" to apply.
