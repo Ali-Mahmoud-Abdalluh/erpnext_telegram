@@ -3,6 +3,12 @@ set -e
 
 # setup.sh - One-click setup for ERPNext Telegram Integration Bot
 
+# Ensure we are in the bench root (if running from apps/erpnext_telegram_integration)
+if [ -d "../../sites" ]; then
+    cd ../..
+    echo "Changed directory to bench root."
+fi
+
 echo "Starting Telegram Bot Setup..."
 
 # 1. Migrate (Triggers install.py -> adds to Procfile)
