@@ -1,38 +1,95 @@
-"source_string","translated_string","context"
-"Welcome back, {0} 👋","مرحباً بعودتك، {0} 👋",""
-"Hello! 👋\n\nPlease enter your **Employee Number** only (e.g. 31)\nor press **Link Token** to link your account:","مرحباً! 👋\n\nالرجاء كتابة **الرقم الوظيفي** فقط (مثال: 31)\nأو اضغط **ربط الرمز** لربط حسابك:",""
-"🔗 Send the **Token** from Telegram User Settings (copy and paste here):\n\nOr press **Cancel** to go back.","🔗 أرسل **الرمز** من Telegram User Settings (انسخه والصقه هنا):\n\nأو اضغط **إلغاء** للرجوع.",""
-"❌ Numbers only (e.g. 31)\nor press **Link Token** to link your account:","❌ أرقام فقط (مثال: 31)\nأو اضغط **ربط الرمز** لربط حسابك:",""
-"⏳ Searching...","⏳ جاري البحث...",""
-"❌ Employee not found. Try again\nor press **Link Token** to link your account:","❌ الموظف غير موجود. حاول مرة أخرى\nأو اضغط **ربط الرمز** لربط حسابك:",""
-"Hello {0} ({1}).\n🔒 Enter **password**:","أهلاً {0} ({1}).\n🔒 أدخل **كلمة المرور**:",""
-"✅ Logged in.\nHello {0}","✅ تم الدخول.\nمرحباً {0}",""
-"❌ Wrong password. /start","❌ كلمة المرور خطأ. /start",""
-"Logged out 👋","تم تسجيل الخروج 👋",""
-"📅 Leave start date:","📅 تاريخ بدء الإجازة:",""
-"Choose from menu:","اختر من القائمة:",""
-"Cancelled.","تم الإلغاء.",""
-"Cancelled.\n\nPlease enter **Employee Number** (e.g. 31):","تم الإلغاء.\n\nالرجاء كتابة **الرقم الوظيفي** (مثال: 31):",""
-"✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.","✅ تم حفظ Chat ID بنجاح!\n\nChat ID: `{0}`\n\nحدّث نموذج Telegram User Settings لرؤية القيمة المحفوظة.",""
-"✅ Chat ID saved successfully!\n\nChat ID: `{0}`\n\nRefresh Telegram User Settings form to see the saved value.\n\nPlease enter **Employee Number** (e.g. 31):","✅ تم حفظ Chat ID بنجاح!\n\nChat ID: `{0}`\n\nحدّث نموذج Telegram User Settings لرؤية القيمة المحفوظة.\n\nالرجاء كتابة **الرقم الوظيفي** (مثال: 31):",""
-"⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).\n\nTry again or press **Cancel**:","⚠️ الرمز غير معروف. تأكد من إنشائه في Telegram User Settings وربطه بنفس البوت (Telegram Settings مع تفعيل Interactive Bot).\n\nأعد المحاولة أو اضغط **إلغاء**:",""
-"Please send the token only (40 chars) or press **Cancel**:","الرجاء إرسال الرمز فقط (40 حرفاً) أو اضغط **إلغاء**:",""
-"⚠️ I didn't understand. Send /start to begin again.","⚠️ لم أفهم. أرسل /start للبدء من جديد.",""
-"📅 Use the calendar above to select, or send **Cancel** to cancel.","📅 استخدم التقويم أعلاه للاختيار، أو أرسل **إلغاء** للإلغاء.",""
-"✅ Start: {0}\n\n📅 End date:","✅ البدء: {0}\n\n📅 تاريخ الانتهاء:",""
-"⏳ Verifying...","⏳ جاري التحقق...",""
-"❌ No leave types available.","❌ لا توجد إجازات متاحة.",""
-"👇 Leave type:","👇 نوع الإجازة:",""
-"❌ Choose leave type from the list:","❌ اختر نوع الإجازة من القائمة:",""
-"Duration:","المدة:",""
-"❌ Choose from list:","❌ اختر من القائمة:",""
-"Leave reason (or 'Skip'):","سبب الإجازة (أو 'تخطى'):",""
-"⏳ Submitting...","⏳ جاري التقديم...",""
-"❌ Failed: {0}","❌ فشل: {0}",""
-"✅ Submitted: {0}","✅ تم التقديم: {0}",""
-"⚠️ An error occurred. Please try again.","⚠️ حدث خطأ. يرجى المحاولة مرة أخرى.",""
-"⛔ Attendance already marked for this day.","⛔ يوجد سجل حضور مسجل مسبقاً في هذا اليوم.",""
-"Date is outside leave allocation period.","التاريخ خارج فترة التخصيص.",""
-"Insufficient leave balance.","رصيد الإجازة غير كافٍ.",""
-"⛔ Leave application already exists for this period.","⛔ يوجد طلب إجازة مسجل مسبقاً.",""
-"An unknown error occurred.","حدث خطأ غير معروف.",""
+Request Leave,طلب إجازة
+Link Token,ربط الرمز
+Logout,تسجيل خروج
+Cancel,إلغاء
+Full Day,يوم كامل
+Half Day,نصف يوم
+Skip,تخطى
+"Welcome back, {0} 👋",مرحباً بعودتك، {0} 👋
+"Hello! 👋
+
+Please enter your **Employee Number** only (e.g. 31)
+or press **Link Token** to link your account:","مرحباً! 👋
+
+الرجاء إدخال **رقم الموظف** فقط (مثال: 31)
+أو اضغط على **ربط الرمز** لربط حسابك:"
+"🔗 Send the **Token** from Telegram User Settings (copy and paste here):
+
+Or press **Cancel** to go back.","🔗 أرسل **الرمز** من إعدادات مستخدم تيليجرام (انسخ والصق هنا):
+
+أو اضغط **إلغاء** للعودة."
+"❌ Numbers only (e.g. 31)
+or press **Link Token** to link your account:","❌ أرقام فقط (مثال: 31)
+أو اضغط **ربط الرمز** لربط حسابك:"
+⏳ Searching...,⏳ جاري البحث...
+"❌ Employee not found. Try again
+or press **Link Token** to link your account:","❌ الموظف غير موجود. حاول مرة أخرى
+أو اضغط **ربط الرمز** لربط حسابك:"
+"Hello {0} ({1}).
+🔒 Enter **password**:","مرحباً {0} ({1}).
+🔒 أدخل **كلمة المرور**:"
+"✅ Logged in.
+Hello {0}","✅ تم تسجيل الدخول.
+مرحباً {0}"
+❌ Wrong password. /start,❌ كلمة المرور غير صحيحة. /start
+Logged out 👋,تم تسجيل الخروج 👋
+📅 Leave start date:,📅 تاريخ بدء الإجازة:
+Choose from menu:,اختر من القائمة:
+Cancelled.,تم الإلغاء.
+"Cancelled.
+
+Please enter **Employee Number** (e.g. 31):","تم الإلغاء.
+
+الرجاء إدخال **رقم الموظف** (مثال: 31):"
+"✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value.","✅ تم حفظ معرف المحادثة بنجاح!
+
+ID: `{0}`
+
+قم بتحديث نموذج إعدادات مستخدم تيليجرام لرؤية القيمة المحفوظة."
+"✅ Chat ID saved successfully!
+
+Chat ID: `{0}`
+
+Refresh Telegram User Settings form to see the saved value.
+
+Please enter **Employee Number** (e.g. 31):","✅ تم حفظ معرف المحادثة بنجاح!
+
+ID: `{0}`
+
+قم بتحديث نموذج إعدادات مستخدم تيليجرام لرؤية القيمة المحفوظة.
+
+الرجاء إدخال **رقم الموظف** (مثال: 31):"
+"⚠️ Unknown token. Make sure it was created in Telegram User Settings and linked to the same bot (Telegram Settings with Interactive Bot enabled).
+
+Try again or press **Cancel**:","⚠️ رمز غير معروف. تأكد من إنشائه في إعدادات مستخدم تيليجرام وربطه بنفس البوت (إعدادات تيليجرام مع تفعيل البوت التفاعلي).
+
+حاول مرة أخرى أو اضغط **إلغاء**:"
+Please send the token only (40 chars) or press **Cancel**:,الرجاء إرسال الرمز فقط (40 حرفاً) أو اضغط **إلغاء**:
+⚠️ I didn't understand. Send /start to begin again.,⚠️ لم أفهم. أرسل /start للبدء من جديد.
+"📅 Use the calendar above to select, or send **Cancel** to cancel.",📅 استخدم التقويم أعلاه للاختيار، أو أرسل **إلغاء** للإلغاء.
+"✅ Start: {0}
+
+📅 End date:","✅ البدء: {0}
+
+📅 تاريخ الانتهاء:"
+⏳ Verifying...,⏳ جاري التحقق...
+❌ No leave types available.,❌ لا توجد أنواع إجازات متاحة.
+👇 Leave type:,👇 نوع الإجازة:
+❌ Choose leave type from the list:,❌ اختر نوع الإجازة من القائمة:
+Duration:,المدة:
+❌ Choose from list:,❌ اختر من القائمة:
+Leave reason (or 'Skip'):,سبب الإجازة (أو 'تخطى'):
+⏳ Submitting...,⏳ جاري الإرسال...
+❌ Failed: {0},❌ فشل: {0}
+✅ Submitted: {0},✅ تم التقديم: {0}
+Cancelled.,تم الإلغاء.
+⚠️ An error occurred. Please try again.,⚠️ حدث خطأ. حاول مرة أخرى.
+⛔ Attendance already marked for this day.,⛔ تم تسجيل الحضور لهذا اليوم بالفعل.
+Date is outside leave allocation period.,التاريخ خارج فترة تخصيص الإجازة.
+Insufficient leave balance.,رصيد الإجازة غير كافٍ.
+⛔ Leave application already exists for this period.,⛔ يوجد طلب إجازة بالفعل لهذه الفترة.
+An unknown error occurred.,حدث خطأ غير معروف.
