@@ -1,0 +1,20 @@
+[Unit]
+Description=ERPNext Telegram Leave Bot
+After=network.target mariadb.service redis.service
+
+[Service]
+Type=simple
+# EDIT THESE: Replace your.site.com with your actual site (e.g. login.sescofire.com)
+# Or run: SITE_NAME=login.sescofire.com sudo -E bash apps/erpnext_telegram_integration/config/setup_telegram_bot_service.sh
+User=frappe
+Group=frappe
+WorkingDirectory=/home/frappe/frappe-bench
+Environment=FRAPPE_SITE=your.site.com
+ExecStart=/home/frappe/frappe-bench/env/bin/python /home/frappe/frappe-bench/apps/erpnext_telegram_integration/erpnext_telegram_integration/bot/run_bot.py --site your.site.com
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

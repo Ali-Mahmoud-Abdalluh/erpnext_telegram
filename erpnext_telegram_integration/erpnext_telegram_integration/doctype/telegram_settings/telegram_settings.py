@@ -7,14 +7,18 @@ import frappe
 import telegram
 import asyncio
 from frappe.model.document import Document
-from frappe.utils import get_url_to_form
 from frappe.utils.data import quoted
-from frappe import _
 from bs4 import BeautifulSoup
 
 
 class TelegramSettings(Document):
-	pass
+	def validate(self):
+		if self.enable_interactive_bot:
+			if "hrms" not in frappe.get_installed_apps():
+				frappe.throw((
+					"The <b>Interactive Bot</b> feature requires the <b>HRMS</b> app to be installed. "
+					"Please install HRMS or disable the Interactive Bot."
+				))
 
 
 
@@ -29,21 +33,18 @@ def send_to_telegram(telegram_user, message, reference_doctype=None, reference_n
 
 
 	if reference_doctype and reference_name:
-		doc_url = get_url_to_form(reference_doctype, reference_name)
-		telegram_doc_link = _("See the document at {0}").format(doc_url)
 		if message:
 			soup = BeautifulSoup(message)
-			message = soup.get_text('\n') + space + str(telegram_doc_link)
+			message = soup.get_text('\n')
 			if type(attachment) is str:
 				attachment = int(attachment)
 			else:
 				if attachment:
 					attachment = 1
 			if attachment == 1:
-				attachment_url =get_url_for_telegram(reference_doctype, reference_name)
-				message = message + space +  attachment_url
+				attachment_url = get_url_for_telegram(reference_doctype, reference_name)
+				message = message + space + attachment_url
 			asyncio.run(bot.send_message(chat_id=telegram_chat_id, text=message))
-		
 	else:
 		message = space + str(message) + space
 		asyncio.run(bot.send_message(chat_id=telegram_chat_id, text=message))

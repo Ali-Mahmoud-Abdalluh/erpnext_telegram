@@ -1,0 +1,25 @@
+{
+ "creation": "2025-02-15 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": ["recipient_doctype"],
+ "fields": [
+  {
+   "fieldname": "recipient_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Recipient DocType",
+   "options": "DocType",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2025-02-15 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Erpnext Telegram Integration",
+ "name": "Telegram Notification Recipient DocType",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1
+}

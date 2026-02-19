@@ -46,6 +46,7 @@ class TelegramNotification(Document):
 		self.validate_forbidden_types()
 		self.validate_condition()
 		self.validate_standard()
+		self.validate_dynamic_recipient_restrictions()
 		frappe.cache().hdel("tel_notifications", self.document_type)
 
 	def on_update(self):
@@ -99,6 +100,45 @@ def get_context(context):
 					self.document_type
 				)
 			)
+
+	def validate_dynamic_recipient_restrictions(self):
+		"""Validate recipient doctypes and child tables match the document type's Link/Table fields."""
+		if not self.document_type:
+			return
+		valid_main_doctypes = _get_valid_recipient_doctypes(self.document_type, from_child=False)
+		valid_child_doctypes = _get_valid_recipient_doctypes(self.document_type, from_child=True)
+		valid_child_tables = _get_valid_child_table_fieldnames(self.document_type)
+
+		if self.dynamic_recipients:
+			for row in self.get("recipient_doctypes") or []:
+				dt = row.get("recipient_doctype")
+				if dt and valid_main_doctypes and dt not in valid_main_doctypes:
+					frappe.throw(
+						_("Recipient DocType '{0}' is not a valid Link field target in Document Type '{1}'. "
+						  "Select only DocTypes that appear as Link fields in the main document.").format(
+							dt, self.document_type
+						)
+					)
+
+		if self.dynamic_recipients_from_child:
+			for row in self.get("recipient_child_tables") or []:
+				fn = row.get("child_table_fieldname")
+				if fn and valid_child_tables and fn not in valid_child_tables:
+					frappe.throw(
+						_("Child Table '{0}' is not a valid Table field in Document Type '{1}'. "
+						  "Select only child table field names from the document.").format(
+							fn, self.document_type
+						)
+					)
+			for row in self.get("recipient_doctypes_from_child") or []:
+				dt = row.get("recipient_doctype")
+				if dt and valid_child_doctypes and dt not in valid_child_doctypes:
+					frappe.throw(
+						_("Recipient DocType '{0}' is not a valid Link field target in child tables of '{1}'. "
+						  "Select only DocTypes that appear as Link fields in child tables.").format(
+							dt, self.document_type
+						)
+					)
 
 	def get_documents_for_today(self):
 		"""get list of documents that will be triggered today"""
@@ -167,35 +207,101 @@ def get_context(context):
 				)
 				doc.set(self.set_property_after_alert, self.property_value)
 
+	def _get_allowed_recipient_doctypes(self, table_fieldname):
+		"""Get set of allowed DocTypes from table. Empty = allow all."""
+		rows = self.get(table_fieldname) or []
+		allowed = {r.get("recipient_doctype") for r in rows if r.get("recipient_doctype")}
+		return allowed
+
+	def _get_allowed_child_table_fieldnames(self):
+		"""Get set of allowed child table field names. Empty = allow all."""
+		rows = self.get("recipient_child_tables") or []
+		return {r.get("child_table_fieldname") for r in rows if r.get("child_table_fieldname")}
+
 	def get_dynamic_recipients(self, doc):
 		recipients_telegram_user_list = []
-		field_names = ["Customer", "Supplier", "Student", "Employee", "User"]
+		seen = set()
 		if self.dynamic_recipients:
-			# Telegram Notification's property e.g. Material Request
-			fields = get_doc_fields(self.document_type) 
+			# 1. Main doctype: get recipients from Link/Dynamic Link fields
+			allowed_doctypes = self._get_allowed_recipient_doctypes("recipient_doctypes")
+			fields = get_doc_fields(self.document_type)
 			for d in fields:
 				party = d.get("field_options")
 				if not party:
-					if (
-						d.get("field_get_value") # DocType
-						and doc.get(d["field_get_value"]) in field_names  # reference_type
-					):
+					# Dynamic Link: party from reference_type field
+					if d.get("field_get_value"):
 						party = doc.get(d["field_get_value"])
 					else:
-						break
+						continue
+				if allowed_doctypes and party not in allowed_doctypes:
+					continue
 
-				filters = {
-						"party": party,
-						"telegram_user": doc.get(d["fieldname"]),
-					}
-				telegram_user_list = frappe.get_all(
-					"Telegram User Settings",
-					filters=filters,
-					fields=["name", "telegram_settings", "telegram_user"],
-				)
-				for i in telegram_user_list:
-					recipients_telegram_user_list.append(i.name)
+				party_value = doc.get(d["fieldname"])
+				if not party_value:
+					continue
+				for r in self._get_telegram_users_for_party(party, party_value, seen):
+					recipients_telegram_user_list.append(r)
+
+		# 2. Child doctypes: independent of dynamic_recipients - each can be selected on its own
+		if self.get("dynamic_recipients_from_child"):
+			child_recipients = self._get_dynamic_recipients_from_child_tables(doc, seen)
+			recipients_telegram_user_list.extend(child_recipients)
 		return recipients_telegram_user_list
+
+	def _get_telegram_users_for_party(self, party, party_value, seen=None):
+		"""Get Telegram User Settings names for a party (Customer, Employee, etc.)."""
+		if not party_value:
+			return []
+		seen = seen or set()
+		filters = {"party": party, "telegram_user": party_value}
+		telegram_user_list = frappe.get_all(
+			"Telegram User Settings",
+			filters=filters,
+			fields=["name"],
+		)
+		result = []
+		for i in telegram_user_list:
+			if i.name not in seen:
+				seen.add(i.name)
+				result.append(i.name)
+		return result
+
+	def _get_dynamic_recipients_from_child_tables(self, doc, seen):
+		"""Get recipients from Link fields in child tables of the main doctype."""
+		recipients = []
+		meta = frappe.get_meta(self.document_type)
+		allowed_child_tables = self._get_allowed_child_table_fieldnames()
+		allowed_doctypes = self._get_allowed_recipient_doctypes("recipient_doctypes_from_child")
+
+		for field in meta.fields:
+			if field.fieldtype != "Table" or not field.options:
+				continue
+			child_table_name = field.fieldname
+			if allowed_child_tables and child_table_name not in allowed_child_tables:
+				continue
+
+			child_doctype = field.options
+			child_rows = doc.get(child_table_name) or []
+
+			# Get any Link/Dynamic Link fields from child doctype
+			child_fields = get_doc_fields(child_doctype)
+			for cf in child_fields:
+				for child_row in child_rows:
+					if cf.get("field_options"):
+						row_party = cf["field_options"]
+						party_value = child_row.get(cf["fieldname"])
+					elif cf.get("field_get_value") and cf.get("fieldname"):
+						row_party = child_row.get(cf["field_get_value"])
+						party_value = child_row.get(cf["fieldname"])
+					else:
+						continue
+					if not row_party or not party_value:
+						continue
+					if allowed_doctypes and row_party not in allowed_doctypes:
+						continue
+					for r in self._get_telegram_users_for_party(row_party, party_value, seen):
+						recipients.append(r)
+		return recipients
 
 	def send_a_telegram_msg(self, doc, context):
 		recipients_telegram_user_list = []
@@ -349,6 +455,100 @@ def get_documents_for_today(notification):
 	return [d.name for d in notification.get_documents_for_today()]
 
 
+def _get_valid_recipient_doctypes(document_type, from_child=False):
+	"""Get set of valid DocType names from Link fields. from_child=True = only from child tables."""
+	if not document_type:
+		return set()
+	meta = frappe.get_meta(document_type)
+	valid = set()
+	for field in meta.fields:
+		if field.fieldtype == "Link" and field.options and field.options != "DocType":
+			if not from_child:
+				valid.add(field.options)
+		elif field.fieldtype == "Table" and field.options and from_child:
+			child_meta = frappe.get_meta(field.options)
+			for cf in child_meta.fields:
+				if cf.fieldtype == "Link" and cf.options and cf.options != "DocType":
+					valid.add(cf.options)
+	return valid
+
+
+def _get_valid_child_table_fieldnames(document_type):
+	"""Get set of valid child table field names (Table fields) in the document type."""
+	if not document_type:
+		return set()
+	meta = frappe.get_meta(document_type)
+	return {f.fieldname for f in meta.fields if f.fieldtype == "Table" and f.options}
+
+
+@frappe.whitelist()
+def get_recipient_options(document_type):
+	"""Get available recipient DocTypes and child table field names from the document type."""
+	if not document_type:
+		return {"recipient_doctypes": [], "child_table_fieldnames": []}
+	doctypes_seen = set()
+	recipient_doctypes = []
+	child_table_fieldnames = []
+
+	meta = frappe.get_meta(document_type)
+	for field in meta.fields:
+		if field.fieldtype == "Link" and field.options and field.options != "DocType":
+			if field.options not in doctypes_seen:
+				doctypes_seen.add(field.options)
+				recipient_doctypes.append({"doctype": field.options, "label": field.label or field.options})
+		elif field.fieldtype == "Table" and field.options:
+			child_table_fieldnames.append({"fieldname": field.fieldname, "label": field.label or field.fieldname})
+			# Also get Link doctypes from child
+			child_meta = frappe.get_meta(field.options)
+			for cf in child_meta.fields:
+				if cf.fieldtype == "Link" and cf.options and cf.options != "DocType":
+					if cf.options not in doctypes_seen:
+						doctypes_seen.add(cf.options)
+						recipient_doctypes.append({"doctype": cf.options, "label": cf.label or cf.options})
+
+	return {"recipient_doctypes": recipient_doctypes, "child_table_fieldnames": child_table_fieldnames}
+
+
+@frappe.whitelist()
+def get_valid_recipient_doctypes(document_type, from_child=0):
+	"""Return list of valid DocType names for set_query filter. from_child: 0=main doc, 1=child tables."""
+	valid = _get_valid_recipient_doctypes(document_type, from_child=bool(from_child))
+	return list(valid)
+
+
+@frappe.whitelist()
+def get_valid_child_table_fieldnames(document_type):
+	"""Return list of valid child table field names for Select options."""
+	valid = _get_valid_child_table_fieldnames(document_type)
+	return sorted(valid)
+
+
+@frappe.whitelist()
+def get_recipient_doctype_query(doctype, txt, searchfield, start, page_len, filters):
+	"""Query for Link field - restrict to valid DocTypes from document_type. Used by set_query."""
+	filters = filters or {}
+	document_type = filters.get("document_type")
+	from_child = filters.get("from_child", 0)
+	if not document_type:
+		return []
+	valid = _get_valid_recipient_doctypes(document_type, from_child=bool(from_child))
+	if not valid:
+		return []
+	# Return DocType names matching txt, restricted to valid list
+	conditions = [["name", "in", list(valid)]]
+	if txt:
+		conditions.append(["name", "like", "%%%s%%" % txt])
+	return frappe.get_all(
+		"DocType",
+		filters=conditions,
+		fields=["name"],
+		limit_start=start,
+		limit_page_length=page_len,
+		order_by="name",
+		as_list=1,
+	)
+
+
 def trigger_daily_alerts():
 	trigger_notifications(None, "daily")
 
@@ -433,11 +633,12 @@ def get_context(doc):
 
 
 def get_doc_fields(doctype_name):
+	"""Get all Link and Dynamic Link fields - any linked doctype can have Telegram User Settings."""
 	fields = frappe.get_meta(doctype_name).fields
 	filed_list = []
-	field_names = ["Customer", "Supplier", "Student", "Employee", "User"]
 	for d in fields:
-		if d.fieldtype == "Link" and d.options in field_names:
+		if d.fieldtype == "Link" and d.options and d.options != "DocType":
+			# Standard Link to any doctype (Customer, Project, Employee, etc.)
 			field = {
 				"label": d.label,
 				"fieldname": d.fieldname,
@@ -447,8 +648,8 @@ def get_doc_fields(doctype_name):
 			}
 			filed_list.append(field)
 		elif d.fieldtype == "Link" and d.options == "DocType":
+			# Dynamic Link: reference_type + reference
 			fieldname = ""
-			field_options = d.fieldname
 			for f in fields:
 				if f.options == d.fieldname and f.fieldtype == "Dynamic Link":
 					fieldname = f.fieldname
@@ -456,9 +657,9 @@ def get_doc_fields(doctype_name):
 			if fieldname:
 				field = {
 					"fieldname": fieldname,
-					"field_get_value": field_options,
+					"field_get_value": d.fieldname,
 				}
-			filed_list.append(field)
+				filed_list.append(field)
 	return filed_list
 
 

@@ -16,12 +16,11 @@ def get_data():
 					"name": "Telegram User Settings",
 					"onboard": 1,
 				},
-				{
-					"type": "doctype",
-					"name": "Telegram Notification",
-					"onboard": 1,
-				},
-				
+		{
+			"type": "doctype",
+			"name": "Telegram Notification",
+			"onboard": 1,
+		},
 			]
 		},
 		

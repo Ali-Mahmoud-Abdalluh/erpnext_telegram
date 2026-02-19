@@ -47,6 +47,40 @@ Telegram Integration and Extra Notifications For Frappe & Erpnext to sending fas
 
 # Setup and Use:
 
+## Interactive Leave Bot (NEW):
+
+**Prerequisites:**
+- **HRMS App:** The interactive bot requires the `hrms` app to be installed on your site.
+
+Employees can apply for leave directly from Telegram:
+
+1. **Enable the bot**: In Telegram Settings, check "Enable Interactive Bot" for the bot you want to use.
+2. **Set bot language** (optional): In Telegram Settings, select "Bot Default Language" – the bot UI will use this language for all users.
+3. **Set employee passwords**: In each Employee record, set "Self Service Password" (used for bot login). *Note: This field is automatically created in the Employee doctype upon installation or migration.*
+4. **Run the bot**:
+
+   **Using Bench (Recommended for Dev/Standard Production):**
+   This app includes a `Procfile` so the bot starts automatically with `bench start`.
+   
+   For production with Supervisor:
+   ```bash
+   bench setup supervisor
+   bench restart
+   ```
+
+   **Manual Run:**
+   ```bash
+   bench execute erpnext_telegram_integration.bot.leave_bot.run
+   ```
+
+5. Employees: Open your bot in Telegram, send `/start`, enter employee number and password, then use "Request Leave" to apply.
+
+
+
+**Get Chat ID via the same bot:** When the interactive bot is running, you can also use it to get Chat ID for Telegram User Settings. In Telegram User Settings, generate a token, send it to the bot, and the bot will save your Chat ID. Refresh the form to see it.
+
+---
+
 ## Telegram Notifications:
 
 In Erpnext Telegram Integration

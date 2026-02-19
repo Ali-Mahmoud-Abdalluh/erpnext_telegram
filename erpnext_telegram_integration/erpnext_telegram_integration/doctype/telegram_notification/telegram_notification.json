@@ -6,16 +6,24 @@
  "document_type": "System",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_document",
+  "document_type",
+  "is_standard",
+  "module",
+  "col_break_doc",
   "enabled",
   "column_break_2",
   "channel",
   "telegram_user",
+  "section_break_recipients",
   "dynamic_recipients",
+  "recipient_doctypes",
+  "column_break_dynamic",
+  "dynamic_recipients_from_child",
+  "recipient_child_tables",
+  "recipient_doctypes_from_child",
   "filters",
   "subject",
-  "document_type",
-  "is_standard",
-  "module",
   "col_break_1",
   "event",
   "method",
@@ -40,6 +48,39 @@
   "print_format"
  ],
  "fields": [
+  {
+   "fieldname": "section_break_document",
+   "fieldtype": "Section Break",
+   "label": "Document"
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Document Type",
+   "options": "DocType",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard"
+  },
+  {
+   "depends_on": "is_standard",
+   "fieldname": "module",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Module",
+   "options": "Module Def"
+  },
+  {
+   "fieldname": "col_break_doc",
+   "fieldtype": "Column Break"
+  },
   {
    "default": "1",
    "fieldname": "enabled",
@@ -72,30 +113,6 @@
    "in_list_view": 1,
    "label": "Subject",
    "reqd": 1
-  },
-  {
-   "fieldname": "document_type",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Document Type",
-   "options": "DocType",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_standard",
-   "fieldtype": "Check",
-   "label": "Is Standard"
-  },
-  {
-   "depends_on": "is_standard",
-   "fieldname": "module",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Module",
-   "options": "Module Def"
   },
   {
    "fieldname": "col_break_1",
@@ -242,10 +259,50 @@
    "options": "Telegram User Settings"
   },
   {
+   "fieldname": "section_break_recipients",
+   "fieldtype": "Section Break",
+   "label": "Recipients"
+  },
+  {
    "default": "0",
    "fieldname": "dynamic_recipients",
    "fieldtype": "Check",
    "label": "Dynamic Recipients"
+  },
+  {
+   "depends_on": "eval:doc.dynamic_recipients",
+   "description": "Select which DocTypes (Customer, Employee, etc.) to get recipients from. Leave empty to use all Link fields.",
+   "fieldname": "recipient_doctypes",
+   "fieldtype": "Table",
+   "label": "Recipient DocTypes",
+   "options": "Telegram Notification Recipient DocType"
+  },
+  {
+   "fieldname": "column_break_dynamic",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Get recipients from Link fields in child tables of the main doctype",
+   "fieldname": "dynamic_recipients_from_child",
+   "fieldtype": "Check",
+   "label": "Dynamic Recipients From Child Tables"
+  },
+  {
+   "depends_on": "eval:doc.dynamic_recipients_from_child",
+   "description": "Select which child table fields to scan. Leave empty to scan all child tables.",
+   "fieldname": "recipient_child_tables",
+   "fieldtype": "Table",
+   "label": "Child Tables to Scan",
+   "options": "Telegram Notification Child Table"
+  },
+  {
+   "depends_on": "eval:doc.dynamic_recipients_from_child",
+   "description": "Select which DocTypes to get recipients from in child tables. Leave empty to use all Link fields.",
+   "fieldname": "recipient_doctypes_from_child",
+   "fieldtype": "Table",
+   "label": "Recipient DocTypes (From Child)",
+   "options": "Telegram Notification Recipient DocType"
   }
  ],
  "icon": "fa fa-envelope",

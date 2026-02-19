@@ -1,61 +1,80 @@
 {
- "allow_rename": 1,
- "autoname": "field:settings_name",
- "creation": "2019-12-01 02:22:48.935318",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "settings_name",
-  "bot_name",
-  "telegram_token"
- ],
- "fields": [
-  {
-   "fieldname": "settings_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Settings Name",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "telegram_token",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Telegram Token",
-   "reqd": 1
-  },
-  {
-   "description": "The actual Telegram Bot name",
-   "fieldname": "bot_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Telegram Bot Name",
-   "reqd": 1
-  }
- ],
- "modified": "2020-04-21 03:12:11.283736",
- "modified_by": "Administrator",
- "module": "Erpnext Telegram Integration",
- "name": "Telegram Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "quick_entry": 1,
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+    "allow_rename": 1,
+    "autoname": "field:settings_name",
+    "creation": "2019-12-01 02:22:48.935318",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "settings_name",
+        "bot_name",
+        "telegram_token",
+        "enable_interactive_bot",
+        "bot_default_language"
+    ],
+    "fields": [
+        {
+            "fieldname": "settings_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Settings Name",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "telegram_token",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Telegram Token",
+            "reqd": 1
+        },
+        {
+            "description": "The actual Telegram Bot name",
+            "fieldname": "bot_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Telegram Bot Name",
+            "reqd": 1
+        },
+        {
+            "default": 0,
+            "description": "Use this bot for interactive features (leave application, etc.)",
+            "fieldname": "enable_interactive_bot",
+            "fieldtype": "Check",
+            "in_list_view": 1,
+            "label": "Enable Interactive Bot"
+        },
+        {
+            "default": "en",
+            "depends_on": "eval:doc.enable_interactive_bot",
+            "description": "Default language for the Interactive Leave Bot. Applies to all users.",
+            "fieldname": "bot_default_language",
+            "fieldtype": "Link",
+            "label": "Bot Default Language",
+            "options": "Language"
+        }
+    ],
+    "modified": "2020-04-21 03:12:11.283736",
+    "modified_by": "Administrator",
+    "module": "Erpnext Telegram Integration",
+    "name": "Telegram Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "quick_entry": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
 }
