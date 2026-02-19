@@ -80,3 +80,32 @@ def setup_procfile():
 		print("Added telegram_bot to Procfile")
 	except Exception:
 		pass
+
+
+def before_uninstall():
+	"""Run cleanup tasks before app uninstallation."""
+	remove_procfile()
+
+
+def remove_procfile():
+	"""Remove the bot process from the bench Procfile."""
+	import os
+	procfile_path = "Procfile"
+	if not os.path.exists(procfile_path):
+		return
+
+	cmd = "telegram_bot: bench execute erpnext_telegram_integration.bot.leave_bot.run"
+	
+	try:
+		with open(procfile_path, "r") as f:
+			lines = f.readlines()
+
+		with open(procfile_path, "w") as f:
+			for line in lines:
+				if cmd in line:
+					continue
+				f.write(line)
+		
+		print("Removed telegram_bot from Procfile")
+	except Exception:
+		pass

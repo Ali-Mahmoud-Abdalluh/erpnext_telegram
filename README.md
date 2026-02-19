@@ -153,6 +153,25 @@ When the Date Notification is trigger it will send an email to the related user 
 
 
 
+## How to Uninstall
+
+ To remove the app and the bot service:
+
+ 1. **Uninstall the App:**
+    ```bash
+    bench --site [sitename] uninstall-app erpnext_telegram_integration
+    ```
+    *This will automatically remove the bot entry from your `Procfile`.*
+
+ 2. **Clean up Supervisor (Production Only):**
+    If you are using Supervisor (Production), you must update the configuration to stop the removed process:
+    ```bash
+    sudo bench setup supervisor
+    sudo supervisorctl reread
+    sudo supervisorctl update
+    ```
+    *Note: The process `telegram_bot` (or `frappe-bench-telegram-bot` if manually added) will stop and disappear.*
+
 ## License
 
 MIT

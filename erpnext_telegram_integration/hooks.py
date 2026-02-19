@@ -60,6 +60,7 @@ app_include_js = ["erpnext_telegram_integration.bundle.js"]
 # before_install = "erpnext_telegram_integration.install.before_install"
 after_install = "erpnext_telegram_integration.install.after_install"
 after_migrate = "erpnext_telegram_integration.install.after_install"
+before_uninstall = "erpnext_telegram_integration.install.before_uninstall"
 
 # Desk Notifications
 # ------------------
