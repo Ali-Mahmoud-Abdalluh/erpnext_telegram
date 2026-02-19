@@ -25,7 +25,7 @@ def add_employee_telegram_fields():
 			"dt": "Employee",
 			"fieldname": "self_service_password",
 			"label": "Self Service Password",
-			"fieldtype": "Data",
+			"fieldtype": "Password",
 			"insert_after": "telegram_chat_id",
 			"description": "Password for Telegram bot / self-service leave application",
 		},

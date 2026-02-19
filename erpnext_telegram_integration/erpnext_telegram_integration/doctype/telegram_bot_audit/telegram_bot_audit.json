@@ -1,0 +1,88 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2024-05-22 10:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "action",
+        "status",
+        "employee",
+        "chat_id",
+        "message",
+        "section_break_details",
+        "details"
+    ],
+    "fields": [
+        {
+            "fieldname": "action",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Action",
+            "reqd": 1
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Success\nFailure",
+            "reqd": 1
+        },
+        {
+            "fieldname": "employee",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Employee",
+            "options": "Employee"
+        },
+        {
+            "fieldname": "chat_id",
+            "fieldtype": "Data",
+            "label": "Chat ID",
+            "read_only": 1
+        },
+        {
+            "fieldname": "message",
+            "fieldtype": "Small Text",
+            "label": "Message"
+        },
+        {
+            "fieldname": "section_break_details",
+            "fieldtype": "Section Break",
+            "label": "Details"
+        },
+        {
+            "fieldname": "details",
+            "fieldtype": "Code",
+            "label": "Details (JSON)",
+            "options": "JSON"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2024-05-22 10:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Erpnext Telegram Integration",
+    "name": "Telegram Bot Audit",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

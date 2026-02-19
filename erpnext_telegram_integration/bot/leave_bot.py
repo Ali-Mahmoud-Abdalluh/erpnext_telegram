@@ -73,7 +73,11 @@ def _cancel_regex():
     if not cancels:
         return r"^Cancel$"
     escaped = [re.escape(t) for t in cancels.values() if t]
-    return r"^(" + "|".join(escaped) + r)$" if escaped else r"^Cancel$"
+    if not escaped:
+        return r"^Cancel$"
+    pattern = r"^(" + "|".join(escaped) + r")"
+    return pattern
+
 _FILTER_CANCEL = filters.Regex(_cancel_regex())
 
 # Conversation states
@@ -198,8 +202,40 @@ def lookup_employee_by_number(number_input):
     return None, None
 
 
-def validate_credentials(employee_id, password):
-    """Validate employee password for self-service."""
+from frappe.utils.password import check_password
+
+# --- SECURITY & AUDIT ---
+def rate_limit_check(chat_id):
+    """Check if user is rate limited due to failed login attempts."""
+    key = f"telegram_bot_login_failed:{chat_id}"
+    attempts = frappe.cache().get_value(key) or 0
+    if attempts >= 5:
+        return False
+    return True
+
+def log_audit(action, status, employee=None, chat_id=None, message=None, details=None):
+    """Log bot actions to Telegram Bot Audit."""
+    try:
+        doc = frappe.get_doc({
+            "doctype": "Telegram Bot Audit",
+            "action": action,
+            "status": status,
+            "employee": employee,
+            "chat_id": str(chat_id) if chat_id else None,
+            "message": message,
+            "details": frappe.as_json(details) if details else None
+        })
+        doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+    except Exception as e:
+        logger.error(f"Failed to log audit: {e}")
+
+def validate_credentials(employee_id, password, chat_id=None):
+    """Validate employee password for self-service with rate limiting."""
+    if chat_id and not rate_limit_check(chat_id):
+        log_audit("Login", "Failure", employee=employee_id, chat_id=chat_id, message="Rate limit exceeded")
+        return "RATE_LIMITED"
+
     if not password or not password.strip():
         return None
 
@@ -213,8 +249,32 @@ def validate_credentials(employee_id, password):
             or frappe.db.get_value("Employee", employee_id, "self_service_password")
             or frappe.db.get_value("Employee", employee_id, "custom_self_service_password")
         )
-        if stored and str(stored).strip() == password:
+        
+        # Check using Frappe's secure password check
+        # If stored is plain text (migrating), check_password might fail or return False depending on hash
+        # We assume stored is now hashed if it's a Password field.
+        # Fallback for plain text if migration just happened but data wasn't updated:
+        is_valid = False
+        if stored:
+            try:
+                # First try secure check (if stored is hash)
+                is_valid = check_password(emp.name, password, fieldname="self_service_password")
+            except Exception:
+                # Fallback: check plain text (legacy)
+                is_valid = str(stored).strip() == password
+
+        if is_valid:
+            if chat_id:
+                # Reset rate limit
+                frappe.cache().delete_value(f"telegram_bot_login_failed:{chat_id}")
             return emp
+        else:
+            if chat_id:
+                key = f"telegram_bot_login_failed:{chat_id}"
+                frappe.cache().incr(key)
+                frappe.cache().expire(key, 600)  # Block for 10 mins
+            return None
+
     except Exception as e:
         logger.debug("validate_credentials failed for %s: %s", employee_id, e)
     return None
@@ -474,10 +534,18 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = get_lang(context.user_data)
     pwd = update.message.text.strip()
     emp_id = context.user_data.get("temp_emp_id")
-    emp = validate_credentials(emp_id, pwd)
+    chat_id = update.effective_chat.id
+    
+    # Pass chat_id for rate limiting
+    emp = validate_credentials(emp_id, pwd, chat_id=chat_id)
+
+    if emp == "RATE_LIMITED":
+        await send_msg(update, context, msg("rate_limited", lang))
+        return ConversationHandler.END
 
     if emp:
-        update_chat_id(emp_id, update.effective_chat.id)
+        log_audit("Login", "Success", employee=emp.name, chat_id=chat_id, message="Login successful")
+        update_chat_id(emp_id, chat_id)
         context.user_data["employee_id"] = emp_id
         context.user_data["employee_name"] = emp.employee_name
         await send_msg(
@@ -488,6 +556,7 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return MAIN_MENU
     else:
+        # Failed login attempt audit is handled inside validate_credentials
         await send_msg(update, context, msg("wrong_password", lang))
         return ConversationHandler.END
 
@@ -768,6 +837,8 @@ async def reason_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
 
         if err:
+            log_audit("Leave Request", "Failure", employee=context.user_data.get("employee_id"), 
+                      chat_id=update.effective_chat.id, message=f"Submission failed: {err}", details=context.user_data)
             await send_msg(
                 update,
                 context,
@@ -775,6 +846,8 @@ async def reason_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=main_menu_keyboard(lang),
             )
         else:
+            log_audit("Leave Request", "Success", employee=context.user_data.get("employee_id"), 
+                      chat_id=update.effective_chat.id, message=f"Submitted {doc_name}", details=context.user_data)
             await send_msg(
                 update,
                 context,
@@ -787,6 +860,8 @@ async def reason_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
         err_text = str(e)
+        log_audit("Leave Request", "Error", employee=context.user_data.get("employee_id"), 
+                  chat_id=update.effective_chat.id, message=f"Exception: {err_text}", details=context.user_data)
         await send_msg(
             update,
             context,
