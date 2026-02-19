@@ -21,8 +21,16 @@ class TelegramSettings(Document):
 				))
 
 	def on_update(self):
-		"""Clear cache on update so bot picks up changes immediately."""
+		"""Clear cache and restart bot service."""
 		frappe.cache().delete_value("bot_default_language")
+		
+		# Restart bot service to apply changes immediately (as requested by user)
+		# This requires the user running bench (frappe) to have permission to control supervisor
+		try:
+			import subprocess
+			subprocess.Popen(["supervisorctl", "restart", "frappe-bench-telegram-bot"])
+		except Exception:
+			pass
 
 
 

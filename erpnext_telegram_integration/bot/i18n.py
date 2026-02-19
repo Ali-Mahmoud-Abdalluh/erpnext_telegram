@@ -167,6 +167,7 @@ def _fetch_bot_lang_from_db():
             filters={"enable_interactive_bot": 1},
             fields=["name", "bot_default_language"],
             limit=1,
+            ignore_permissions=True
         )
         if not settings:
              # Fallback: first Telegram Settings
@@ -174,6 +175,7 @@ def _fetch_bot_lang_from_db():
                 "Telegram Settings",
                 fields=["name", "bot_default_language"],
                 limit=1,
+                ignore_permissions=True
             )
 
         if settings:
